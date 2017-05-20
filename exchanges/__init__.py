@@ -12,7 +12,7 @@ class Balance(object):
         return self._asset
 
     @property
-    def ammount(self):
+    def amount(self):
         return self._amount
 
 
