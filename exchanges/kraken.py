@@ -1,6 +1,6 @@
 import requests
 
-from exchanges import Exchange
+from exchanges import Exchange, Trade
 
 
 class Kraken(Exchange):
@@ -11,10 +11,15 @@ class Kraken(Exchange):
 
     def server_time(self):
         """Queries the current server time (unix time stamp)"""
+
         return self._public_query('Time')['unixtime']
 
     def latest_trade(self, asset_pair):
-        pass
+        """Queries the latest trade"""
+
+        ticker = self._public_query('Ticker', {'pair': [asset_pair]})
+        price, volume = ticker[asset_pair]['c']
+        return Trade(asset_pair, price, volume)
 
     def place_order(self, order):
         pass
@@ -25,7 +30,7 @@ class Kraken(Exchange):
     def trades_history(self, asset_pair, start_time, finish_time):
         pass
 
-    def _public_query(self, query_name, parameters=None):
+    def _public_query(self, query_name, data=None):
         """Queries public data on Kraken"""
 
         # Request public data. This can raise an exception
@@ -33,7 +38,12 @@ class Kraken(Exchange):
         # out. In addition, raise an exception if the status is not
         # OK.
         url = '{}public/{}'.format(self.url, query_name)
-        response = requests.get(url, timeout=self.timeout)
+        response = requests.post(url, data=data, timeout=self.timeout)
         response.raise_for_status()
 
-        return response.json()['result']
+        json = response.json()
+
+        if len(json['error']) > 0:
+            raise RuntimeError(json['error'][0])
+
+        return json['result']
