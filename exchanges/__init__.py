@@ -29,3 +29,5 @@ class Exchange(ABC):
     def trades_history(self, asset_pair, start_time, finish_time):
         """Retrieves the trades made between the supplied time interval"""
         pass
+
+from .kraken import Kraken
