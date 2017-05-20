@@ -64,3 +64,5 @@ class Trade(object):
     @property
     def volume(self):
         return self._volume
+
+from .kraken import Kraken
