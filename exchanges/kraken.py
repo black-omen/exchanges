@@ -30,7 +30,7 @@ class Kraken(Exchange):
     def trades_history(self, asset_pair, start_time, finish_time):
         pass
 
-    def _public_query(self, query_name, data=None):
+    def _public_query(self, query_name, parameters=None):
         """Queries public data on Kraken"""
 
         # Request public data. This can raise an exception
@@ -38,7 +38,7 @@ class Kraken(Exchange):
         # out. In addition, raise an exception if the status is not
         # OK.
         url = '{}public/{}'.format(self.url, query_name)
-        response = requests.post(url, data=data, timeout=self.timeout)
+        response = requests.get(url, params=parameters, timeout=self.timeout)
         response.raise_for_status()
 
         json = response.json()
