@@ -3,7 +3,7 @@ import unittest
 
 from requests.exceptions import Timeout, HTTPError
 
-from exchanges import Kraken
+from exchanges import Kraken, Trade
 
 
 class TestKraken(unittest.TestCase):
@@ -41,9 +41,10 @@ class TestKraken(unittest.TestCase):
         kraken = Kraken()
 
         # Get the latest trade. I cannot find a way to validate
-        # the result, so I just assume that if it returns something
-        # everything is ok.
+        # the result, so I just assume that if it returns a
+        # trade everything is ok.
         trade = kraken.latest_trade('XETHZEUR')
+        self.assertTrue(isinstance(trade, Trade))
 
         time.sleep(3)
 
