@@ -27,7 +27,7 @@ class TestKraken(unittest.TestCase):
         # sure it is raised.
         kraken.timeout = 1e-16
         self.assertRaises(Timeout, kraken.server_time)
-        kraken.timeout = 1.0
+        kraken.timeout = 5.0
 
         time.sleep(3)
 

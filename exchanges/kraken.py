@@ -11,16 +11,7 @@ class Kraken(Exchange):
 
     def server_time(self):
         """Queries the current server time (unix time stamp)"""
-
-        # Request the server time. This can raise an exception
-        # if there is a connection error or if the request times
-        # out. In addition, raise an exception if the status is not
-        # OK.
-        response = requests.get(self.url + 'public/Time', timeout=self.timeout)
-        response.raise_for_status()
-
-        result = response.json()['result']
-        return result['unixtime']
+        return self._public_query('Time')['unixtime']
 
     def latest_trade(self, asset_pair):
         pass
@@ -33,3 +24,16 @@ class Kraken(Exchange):
 
     def trades_history(self, asset_pair, start_time, finish_time):
         pass
+
+    def _public_query(self, query_name, parameters=None):
+        """Queries public data on Kraken"""
+
+        # Request public data. This can raise an exception
+        # if there is a connection error or if the request times
+        # out. In addition, raise an exception if the status is not
+        # OK.
+        url = '{}public/{}'.format(self.url, query_name)
+        response = requests.get(url, timeout=self.timeout)
+        response.raise_for_status()
+
+        return response.json()['result']
