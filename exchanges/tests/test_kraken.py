@@ -3,7 +3,7 @@ import unittest
 
 from requests.exceptions import Timeout, HTTPError
 
-from exchanges import Kraken
+from exchanges import Kraken, Trade
 
 
 class TestKraken(unittest.TestCase):
@@ -34,3 +34,19 @@ class TestKraken(unittest.TestCase):
         # Change the url to get and HTTP error.
         kraken.url = kraken.url[:-1]
         self.assertRaises(HTTPError, kraken.server_time)
+
+    def test_latest_ticker(self):
+        """Test the latest_ticker method"""
+
+        kraken = Kraken()
+
+        # Get the latest trade. I cannot find a way to validate
+        # the result, so I just assume that if it returns a
+        # trade everything is ok.
+        trade = kraken.latest_trade('XETHZEUR')
+        self.assertTrue(isinstance(trade, Trade))
+
+        time.sleep(3)
+
+        # Querying a non existent asset pair should fail.
+        self.assertRaises(RuntimeError, lambda: kraken.latest_trade('FAKE'))
