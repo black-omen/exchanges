@@ -48,9 +48,10 @@ class Exchange(ABC):
 
 class Trade(object):
     """TODO: Check types"""
-    def __init__(self, asset_pair, price, volume):
+    def __init__(self, asset_pair, price, volume, time):
         self._asset_pair = asset_pair
         self._price = price
+        self._time = time
         self._volume = volume
 
     @property
@@ -62,7 +63,12 @@ class Trade(object):
         return self._price
 
     @property
+    def time(self):
+        return self._time
+
+    @property
     def volume(self):
         return self._volume
+
 
 from .kraken import Kraken
