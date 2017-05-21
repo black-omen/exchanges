@@ -1,13 +1,46 @@
+import os
 import time
 import unittest
 
 from requests.exceptions import Timeout, HTTPError
 
-from exchanges import Kraken, Trade
+from exchanges import DATA_DIR, Kraken, OrderInformation, Trade
 
 
 class TestKraken(unittest.TestCase):
     """Tests for the exchanges.Kraken class"""
+
+    def test_order_info(self):
+        """Test the order_info method"""
+
+        kraken = Kraken()
+
+        # Get a closed order id.
+        closed_order_file = os.path.join(DATA_DIR, 'kraken', 'closed-order-id')
+        if os.path.exists(closed_order_file):
+            with open(closed_order_file) as f:
+                order_id = f.readline().rstrip()
+        else:
+            raise IOError('Testing the order_info method requires an order '
+                          'id. Plead add a closed order id to the file '
+                          '\'exchanges/data/kraken/closed-order-id\'.')
+
+        # If the API keys are not set, we cannot query
+        # private user data.
+        key = kraken.public_key
+        kraken.public_key = None
+        self.assertRaises(ValueError, kraken.order_info, order_id)
+        kraken.public_key = key
+        time.sleep(3)
+
+        # Get the information about some order. Verify that the
+        # status is closed.
+        # TODO: More in depth validation once we define what an
+        # OrderInformation should contain.
+        order_info = kraken.order_info(order_id)
+        self.assertTrue(isinstance(order_info, OrderInformation))
+        self.assertEqual(order_info.status, 'closed')
+        time.sleep(3)
 
     def test_server_time(self):
         """Test the server_time method"""

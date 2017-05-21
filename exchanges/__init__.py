@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+import os
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+PRIVATE_DATA_DIR = os.path.join(DATA_DIR, 'private')
 
 
 class Balance(object):
@@ -44,6 +48,16 @@ class Exchange(ABC):
     def trades_history(self, asset_pair, start_time, finish_time):
         """Retrieves the trades made between the supplied time interval"""
         pass
+
+
+class OrderInformation(object):
+    """TODO: Check types"""
+    def __init__(self, status):
+        self._status = status
+
+    @property
+    def status(self):
+        return self._status
 
 
 class Trade(object):
