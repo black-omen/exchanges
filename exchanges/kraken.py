@@ -60,8 +60,10 @@ class Kraken(Exchange):
         """Queries private data on Kraken"""
 
         if self.public_key is None or self.private_key is None:
-            raise ValueError('Querying the private user '
-                             'data requires an API key.')
+            raise ValueError('Querying the private user data requires '
+                             'an API key. Please add your public and private '
+                             'keys to the file '
+                             '\'exchanges/data/private/kraken-key\'.')
 
         nonce = int(1000 * time.time())
 
