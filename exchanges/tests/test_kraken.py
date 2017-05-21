@@ -83,3 +83,52 @@ class TestKraken(unittest.TestCase):
 
         # Querying a non existent asset pair should fail.
         self.assertRaises(RuntimeError, lambda: kraken.latest_trade('FAKE'))
+
+
+    def test_trades_history(self):
+        """Test the trades_history method"""
+
+        kraken = Kraken()
+
+        asset = 'XXBTZEUR'
+        since = 1470092400  # 2016-08-02 01:00:00 - unix timestamp
+        trades_history = kraken.trades_history(asset, since)
+
+        # The first was filled shortly after 'since'
+        tolerance = 10  # 10ms in unix timestamp
+        self.assertTrue(trades_history[0].time - since < tolerance)
+        self.assertEqual(len(trades_history), 1000)
+
+        # The rest are ordered
+        for i, trade in enumerate(trades_history[1:], 1):
+            self.assertTrue(trade.time > trades_history[i-1].time)
+
+        # By looking at /Trades?pair=XXBTZEUR&since=1470092400000000000
+        # in a web browser we can create a specific test with only
+        # 3 orders between 'since' and 'until'
+        until = 1470092421.1177
+        gt_prices_volumes = [(538.05000, 1.07597000) ,(538.05000, 0.00020000),
+                             (538.05000, 0.05610236)]
+        trades_history = kraken.trades_history(asset, since, until)
+        for i, trade in enumerate(trades_history):
+            self.assertEqual(trade.asset_pair, asset)
+            self.assertEqual(trade.price, gt_prices_volumes[i][0])
+            self.assertEqual(trade.volume, gt_prices_volumes[i][1])
+
+        until = 1470150000 # 16hs of diff.
+        trades_history = kraken.trades_history(asset, since, until)
+
+        # First and last within boundaries
+        self.assertTrue(len(trades_history) > 1000)
+        self.assertTrue(trades_history[0].time - since < tolerance)
+        self.assertTrue(until - trades_history[-1].time < tolerance)
+
+        # The rest are ordered
+        for i, trade in enumerate(trades_history[1:], 1):
+            self.assertTrue(trade.time > trades_history[i-1].time)
+
+        time.sleep(1)
+
+        # Querying a non existent asset pair should fail.
+        self.assertRaises(RuntimeError, lambda: kraken.trades_history('FAKE',
+                                                                      123456))
