@@ -74,8 +74,13 @@ class TestKraken(unittest.TestCase):
         # in a web browser we can create a specific test with only
         # 3 orders between 'since' and 'until'
         until = 1470092421.1177
+        gt_prices_volumes = [(538.05000, 1.07597000) ,(538.05000, 0.00020000),
+                             (538.05000, 0.05610236)]
         trades_history = kraken.trades_history(asset, since, until)
-        self.assertEqual(len(trades_history), 3)
+        for i, trade in enumerate(trades_history):
+            self.assertEqual(trade.asset_pair, asset)
+            self.assertEqual(trade.price, gt_prices_volumes[i][0])
+            self.assertEqual(trade.volume, gt_prices_volumes[i][1])
 
         until = 1470150000 # 16hs of diff.
         trades_history = kraken.trades_history(asset, since, until)
