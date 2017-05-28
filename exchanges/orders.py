@@ -99,7 +99,7 @@ class TrailingStop(Order):
          start following the market price and keep record of the MAXIMUM price
          achieved SINCE this order was placed. If at some point, the market
          price goes UNDER the maximum price by the desired offset, then an
-         Order(BUY, (A0, A1), volume) will be triggered.
+         Order(SELL, (A0, A1), volume) will be triggered.
 
       The offset can be relative to the current market price.
 
