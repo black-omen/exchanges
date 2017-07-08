@@ -1,12 +1,17 @@
 class Asset(object):
 
+    CRYPTO='X'
+    FIAT='Z'
+
     def __init__(self, name, atype, iso4217_a3=None, abbreviation=None):
 
         if iso4217_a3 is None and abbreviation is None:
-            raise ValueError('At least one denomination is needed')
+            raise ValueError('You must provided either an abbreviation or '
+                             'the iso4217_a3 name')
 
-        if atype not in ['X', 'Z']:
-            raise ValueError("atype must be either 'X' or 'Z'")
+        if atype not in [Asset.CRYPTO, Asset.FIAT]:
+            raise ValueError("atype must be either {} or {}"
+                             .format(Asset.CRYPTO, Asset.FIAT))
 
         self._name = name
         self._iso4217_a3 = iso4217_a3
@@ -25,8 +30,7 @@ class Asset(object):
     def abbreviation(self):
         return self._abbreviation
 
-    @property
-    def code(self):
+    def __str__(self):
         if self.iso4217_a3:
             return self._atype + self._iso4217_a3
         else:
@@ -38,12 +42,12 @@ class Asset(object):
 
 
 # Cryptocurrencies
-Bitcoin = Asset('bitcoin', 'X', 'BTC', 'BTC')
-Ethereum = Asset('ethereum', 'X', 'ETH', 'BTC')
-Litecoin = Asset('litecoin', 'X', 'LTC', 'LTC')
-Ripple = Asset('ripple', 'X', 'XRP', 'XRP')
-Zcoin = Asset('zcoin', 'X', None, 'ZEC')
+Bitcoin = Asset('bitcoin', Asset.CRYPTO, 'BTC', 'BTC')
+Ethereum = Asset('ethereum', Asset.CRYPTO, 'ETH', 'BTC')
+Litecoin = Asset('litecoin', Asset.CRYPTO, 'LTC', 'LTC')
+Ripple = Asset('ripple', Asset.CRYPTO, 'XRP', 'XRP')
+Zcoin = Asset('zcoin', Asset.CRYPTO, None, 'ZEC')
 
 # Currencies
-Euro = Asset('euro', 'Z', 'EUR', 'EUR')
-Dolar = Asset('dolar', 'Z', 'USD', 'USD')
+Euro = Asset('euro', Asset.FIAT, 'EUR', 'EUR')
+Dollar = Asset('dollar', Asset.FIAT, 'USD', 'USD')
